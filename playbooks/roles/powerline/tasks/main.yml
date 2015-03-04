@@ -24,7 +24,7 @@
 
 - name: Create powerline config dir
   file:
-    path: "~{{target_user}}/.config/powerline"
+    path: "~{{target_user}}/.config/powerline/themes/shell"
     state: directory
 
 - name: Drop powerline configs
