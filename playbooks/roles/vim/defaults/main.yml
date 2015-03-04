@@ -8,3 +8,4 @@ bundles:
  - 'sjl/gundo.vim'
  - 'majutsushi/tagbar'
  - 'scrooloose/nerdtree'
+ - 'christoomey/vim-tmux-navigator'

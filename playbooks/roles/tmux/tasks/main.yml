@@ -9,5 +9,6 @@
   template:
     src: tmux.conf
     dest: "~{{target_user}}/.tmux.conf"
+    owner: "{{target_user}}"
 
 
