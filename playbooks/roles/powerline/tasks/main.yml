@@ -32,6 +32,11 @@
     src: config.json
     dest: "~{{target_user}}/.config/powerline/config.json"
 
+- name: Drop powerline shell config
+  template:
+    src: default_leftonly.json
+    dest: "~{{target_user}}/.config/powerline/themes/shell/default_leftonly.json"
+
 - name: Template bashrc
   template:
     src: bashrc
