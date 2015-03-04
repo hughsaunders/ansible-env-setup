@@ -1,0 +1,159 @@
+#!/bin/bash
+export PATH=/usr/local/bin:/opt/local/bin:~/bin:$HOME/.rvm/bin:$PATH
+export EDITOR=vim
+export TERM="screen-256color"
+export PIP_REQUIRE_VIRTUALENV=true
+
+SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
+
+for var in ${SSHVARS} ; do
+    echo "export $var=\"${!var}\""
+done 1>$HOME/.ssh/latestagent
+
+domain="uk.rs.wherenow.org"
+
+set -o vi
+
+sourceifpresent(){
+  [[ -f $1 ]] && source $1
+}
+
+#load nova rc
+sourceifpresent ~/.nova
+
+#load python virtual env scripts.
+sourceifpresent /usr/local/bin/virtualenvwrapper.sh
+
+#complete hostnames from known hosts.
+SSH_COMPLETE=( $(cat ~/.ssh/known_hosts | \
+cut -f 1 -d " " | \sed -e s/,.*//g | \
+uniq ) ); complete -o default -W "${SSH_COMPLETE[*]}" ssh
+
+#Command aliases
+alias sn=supernova
+alias occ=opencentercli
+#alias vi=mvim
+#alias vim=mvim
+alias next-review='next-review --user={{gerrit_username|default("hughsaunders")}}'
+alias gbv='git branch -va'
+alias gca='git commit -a --amend --no-edit'
+alias gco='git fetch origin && git checkout origin'
+alias g=git
+alias ta='source .tox/py27/bin/activate'
+#alias git=hub
+alias best='bundle exec strainer test'
+
+# list branches by age of last commit
+branches_by_age(){ 
+  git for-each-ref --sort=committerdate refs/heads \
+  | awk '{print $NF}'
+}
+
+# get name of nth oldest branch
+last_branch(){
+  git for-each-ref --sort=-committerdate refs/heads \
+  |sed -n $((${1:-1}+1))p \
+  |awk '{print $3}'
+}
+
+
+function tox(){
+  deactivate
+  /usr/local/bin/tox $@
+  ta
+}
+
+gpf(){
+    git push -f $1 HEAD:$2
+}
+
+get_image(){
+  nova image-list  |awk -F\| '/PVHVM/{next}; /'"$1"'/{print $2}'|tr -d '\n '
+}
+
+cip(){
+  nova show $1 |awk '/accessIPv4/{print $4}'
+}
+cssh(){
+    host=$(cip $1)
+    shift
+    ssh root@$host $@
+}
+
+
+boot(){
+  name="${1:-$(date +%H-%M-%S_%d-%m-%Y)}"
+  flavor="${2:-general1-2}"
+  image_pattern="${3:-Ubuntu 14.04 LTS}"
+  image="$(get_image "$image_pattern")"
+  nics=($(nova network-list |egrep -v 'public|private|--|ID' |cut -d' ' -f2))
+  disk_config=AUTO
+  key_name=hughsaunderspersonal
+  #nic_string="$(for nic in ${nics[@]}; do echo -n "--nic net-id=$nic "; done)"
+
+  echo "Booting instance: nova boot --image $image --flavor $flavor --key-name $key_name $nic_string --disk-config $disk_config --poll $name"
+  nova boot \
+    --image "$image" \
+    --flavor "$flavor" \
+    --key-name $key_name\
+    $nic_string \
+    --disk-config $disk_config\
+    --poll\
+    $name &&\
+    which dns && dns addrecord $domain "instance:$name"
+}
+
+novadel(){
+    [ -z "$1" ] && return
+
+    (nova list | awk -F \| '/'$1'/{print $2,$4}' | while read id name; do
+        echo "deleting instance $name/$id"
+        nova delete $id;
+    done)&
+
+    which dns && (dns list --domain $domain |grep $1 |while read record ip rtype; do
+        dns deleterecord $domain $record
+    done)&
+
+    wait
+}
+
+
+ansible_inventory(){
+    echo "[All]"
+    nova list \
+        |awk '/'$1'.*ACTIVE/{print $4}'\
+        |while read host; do
+            echo "$host ansible_ssh_host=$(cip $host)"
+        done
+}
+
+
+get_sha() {
+    git rev-parse --short HEAD 2>/dev/null
+}
+
+update_ssh_auth_sock(){
+  export SSH_AUTH_SOCK=\
+    $( \
+      ls -tr $( \
+        find /tmp/ssh* \! -user $USER -prune -o \( -name 'agent.[0-9]*' -print \) \
+      )|tail -n1 \
+    )
+}
+
+nova(){
+  update_ssh_auth_sock
+  /usr/local/bin/nova $@
+}
+
+ssh(){
+  update_ssh_auth_sock
+  /usr/bin/ssh $@
+}
+
+which powerline-daemon &>/dev/null && powerline-daemon -q
+export POWERLINE_CONFIG_COMMAND=$(which powerline-config)
+POWERLINE_BASH_CONTINUATION=1
+POWERLINE_BASH_SELECT=1
+sourceifpresent /usr/local/lib/python2.7/dist-packages/powerline/bindings/bash/powerline.sh

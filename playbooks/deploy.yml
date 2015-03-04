@@ -1,0 +1,30 @@
+---
+- hosts: all
+  name: "Create target user"
+  tasks:
+    - user:
+        name: "{{target_user}}"
+        state: present
+        shell: /bin/bash
+    - file:
+        path: "~{{target_user}}/.ssh"
+        state: directory
+        owner: "{{target_user}}"
+    - file:
+        path: "~{{target_user}}/.ssh/known_hosts"
+        state: touch
+        owner: "{{target_user}}"
+    - shell: "cp /root/.ssh/authorized_keys ~{{target_user}}/.ssh/authorized_keys"
+      args:
+        creates: "~{{target_user}}/.ssh/authorized_keys"
+    - file:
+        path: "~{{target_user}}/.ssh/authorized_keys"
+        owner: "{{target_user}}"
+        mode: 0600
+
+- hosts: all
+  name: "Configure dev environment"
+  roles:
+    - tmux
+    - vim
+    - powerline

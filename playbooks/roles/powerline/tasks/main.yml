@@ -1,0 +1,38 @@
+---
+- name: Install powerline packages
+  apt:
+    name: "{{item}}"
+  with_items:
+    - socat
+    - psutils
+    - git
+    - python-pip
+    - python-dev
+    - build-essential
+    - libffi-dev
+    - libgit2-dev
+    - libgit2-0
+    - make
+    - m4
+    - automake
+
+- name: Install powerline python packages
+  pip:
+    name: "{{item}}"
+  with_items:
+    - powerline-status
+
+- name: Create powerline config dir
+  file:
+    path: "~{{target_user}}/.config/powerline"
+    state: directory
+
+- name: Drop powerline configs
+  template:
+    src: config.json
+    dest: "~{{target_user}}/.config/powerline/config.json"
+
+- name: Template bashrc
+  template:
+    src: bashrc
+    dest: "~{{target_user}}/.bashrc"

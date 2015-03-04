@@ -1,0 +1,10 @@
+---
+
+#Plugins to install:
+bundles:
+ - 'tpope/vim-fugitive'
+ - 'ctrlpvim/ctrlp.vim'
+ - 'flazz/vim-colorschemes'
+ - 'sjl/gundo.vim'
+ - 'majutsushi/tagbar'
+ - 'scrooloose/nerdtree'

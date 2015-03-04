@@ -1,0 +1,13 @@
+---
+- name: Install tmux packages
+  apt:
+    name: "{{item}}"
+  with_items:
+    - tmux
+
+- name: Drop tmux configs
+  template:
+    src: tmux.conf
+    dest: "~{{target_user}}/.tmux.conf"
+
+
