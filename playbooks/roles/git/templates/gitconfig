@@ -1,0 +1,27 @@
+[user]
+	name = Hugh Saunders
+    email = hugh@wherenow.org
+[color]
+	ui = true
+
+[alias]
+	co = checkout
+	com = commit
+	br = branch
+	s = status
+	st = status
+	sh = show
+	lg = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' -n 10
+[push]
+	default = simple
+[rerere]
+	enabled = true
+[log]
+	abbrevCommit = true
+[gitreview]
+	username = hughsaunders
+
+[merge]
+          tool = vim
+[mergetool "vim"]
+          cmd = vim "+Gdiff" $MERGED
