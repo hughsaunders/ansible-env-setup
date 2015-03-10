@@ -9,3 +9,4 @@ bundles:
  - 'majutsushi/tagbar'
  - 'scrooloose/nerdtree'
  - 'christoomey/vim-tmux-navigator'
+ - 'andviro/flake8-vim'

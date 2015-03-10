@@ -1,2 +1,2 @@
 [all]
-technight ansible_ssh_host=162.13.81.17 ansible_ssh_user=root target_user=hugh
+technight ansible_ssh_host=134.213.132.168 ansible_ssh_user=root target_user=hugh
