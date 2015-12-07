@@ -2,7 +2,6 @@
 export PATH=/usr/local/bin:/opt/local/bin:~/bin:$HOME/.rvm/bin:$PATH
 export EDITOR=vim
 export TERM="screen-256color"
-export PIP_REQUIRE_VIRTUALENV=true
 
 SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
 
@@ -30,17 +29,12 @@ cut -f 1 -d " " | \sed -e s/,.*//g | \
 uniq ) ); complete -o default -W "${SSH_COMPLETE[*]}" ssh
 
 #Command aliases
-alias sn=supernova
-alias occ=opencentercli
-#alias vi=mvim
-#alias vim=mvim
 alias next-review='next-review --user={{gerrit_username|default("hughsaunders")}}'
 alias gbv='git branch -va'
 alias gca='git commit -a --amend --no-edit'
 alias gco='git fetch origin && git checkout origin'
 alias g=git
 alias ta='source .tox/py27/bin/activate'
-#alias git=hub
 alias best='bundle exec strainer test'
 
 # list branches by age of last commit
