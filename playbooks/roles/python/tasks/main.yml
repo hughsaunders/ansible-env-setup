@@ -1,0 +1,9 @@
+---
+
+- name: Install python pip packages
+  pip:
+    name: "{{item}}"
+  with_items:
+    - virtualenv
+    - ipython
+
