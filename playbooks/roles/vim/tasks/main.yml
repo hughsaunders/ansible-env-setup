@@ -25,7 +25,3 @@
     src: vimrc
     dest: "~{{target_user}}/.vimrc"
     owner: "{{target_user}}"
-
-- name: "Install Neobundle packages"
-  shell: "vim +qall ||:"
-  with_items: [0, 1, 2]

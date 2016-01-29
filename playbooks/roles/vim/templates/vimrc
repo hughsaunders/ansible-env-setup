@@ -225,7 +225,6 @@ NeoBundleCheck
 
 set rtp+=/usr/local/lib/python2.7/dist-packages/powerline/bindings/vim
 set background=dark
-colorscheme solarized
 
 "Hilight col 79
 if exists("&colorcolumn")
